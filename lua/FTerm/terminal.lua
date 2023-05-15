@@ -105,7 +105,7 @@ function Term:create_win(buf)
 
     local dim = U.get_dimension(cfg.dimensions)
 
-    local win = A.nvim_open_win(buf, true, {
+    local opts = {
         border = cfg.border,
         relative = 'editor',
         style = 'minimal',
@@ -113,7 +113,13 @@ function Term:create_win(buf)
         height = dim.height,
         col = dim.col,
         row = dim.row,
-    })
+    }
+    
+    if type(cfg.float_opts) == 'function' then
+        opts = vim.tbl_deep_extend('force', opts, cfg.float_opts())
+    end
+    
+    local win = A.nvim_open_win(buf, true, opts)
 
     A.nvim_win_set_option(win, 'winhl', ('Normal:%s'):format(cfg.hl))
     A.nvim_win_set_option(win, 'winblend', cfg.blend)
